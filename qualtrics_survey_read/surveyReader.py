@@ -6,7 +6,7 @@ import json
 import time
 import pandas as pd
 import os
-import zipfile
+from zipfile import ZipFile
 from io import BytesIO
 from datetime import datetime, timezone
 from collections import Counter
@@ -245,7 +245,7 @@ class surveyReader:
         
         with BytesIO(self._compressed_csv) as zipped: #psuedo in memory file
 
-            with zipfile.ZipFile(zipped , 'r') as file:
+            with ZipFile(zipped , 'r') as file:
 
                 self._nameslist = file.namelist()
 
