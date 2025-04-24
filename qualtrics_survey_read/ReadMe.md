@@ -2,7 +2,7 @@ Classes:
     SurveyReader:
         A class to handle reading and processing survey files from qualtrics.
 
-SurveyReader() Methods:
+SurveyReader Methods:
     SurveyReader()
         Initializes the SurveyReader instance with the given file path or arguments - but not both.
 
