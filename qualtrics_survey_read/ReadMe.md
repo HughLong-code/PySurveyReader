@@ -1,10 +1,12 @@
-Classes:
+# SurveyReader class and its associated function provide read from qualtrics and write to snowflake functionality
+
+## Classes:
     SurveyReader:
         A class to handle reading and processing survey files from qualtrics.
 
-SurveyReader Methods:
+## SurveyReader Methods:
     SurveyReader()
-        Initializes the SurveyReader instance with the given file path or arguments - but not both.
+        Initializes the SurveyReader instance with the given file path or auth arguments  - but not both.
 
         Keyword Parameters:
         -
@@ -46,7 +48,7 @@ SurveyReader Methods:
         keepFile (bool) : Whether to keep the csv file created when the bytestring is decompressed. File will be written to the current working directory if 'subDirTarget' was not specified on object creation.
 
 
-Functions:
+## Functions:
 
     read_sql()->pd.dataframe
 
@@ -61,7 +63,7 @@ Functions:
 
     to_snowflake() -> int
 
-        Writes a dataframe to snowflake, can also write only those rows that have not been written to a table sharing the same name as tableName based on key columns specified, the column's values will be compared as strings and only rows containing non-duplicated values will be written.
+        Writes a dataframe to snowflake, can also write only those rows that have not been written to a table sharing the same name as tableName based on key columns specified, the column's values will be compared as strings and only rows containing non-duplicated values will be written. Returns number of rows written upon success
 
         Keyword Parameters:
         -
@@ -80,7 +82,7 @@ Functions:
         dfIdColumn (str) : the column name for the column you want to use as the id column in the passed dataframe. Will be used to compare with snowflake id column to determine which rows are new and should be pushed.
 
 
-Usage:
+## Usage:
     a = surveyReader.surveyReader(pathToFile='C:/some/path/to/qualtrics_cred.json' , surveyId='someid78934759')
 
     x = a.read().to_df()
@@ -88,4 +90,8 @@ Usage:
     df = x['somename]
 
     to_snowflake(conn , df , 'somename')
-"""
+
+## Credential Format:
+    You may specify the credentials needed as named parameters upon initializing a member of SurveyReader, or , you can include a path to a .env or .json file with the credentials in the format:
+    {"client_id" : "urID" , "client_secret" : "urSecret" , "datacenter" : "urdatacenter" , "survey_id" : "ursurveyId"}
+    you do not have to include "survey_id" in the file, you may specify it as a parameter.
