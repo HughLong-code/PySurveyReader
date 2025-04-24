@@ -1,5 +1,3 @@
-This module provides functionality to read survey responses from qualtrics and push them to snowflake using the snowflake python tools.
-
 Classes:
     SurveyReader:
         A class to handle reading and processing survey files from qualtrics.
