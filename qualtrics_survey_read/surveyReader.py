@@ -339,7 +339,7 @@ def to_snowflake(conn:snowflake.connector, df:pd.DataFrame , tableName:str = Non
         except ValueError:
             already_written = pd.DataFrame(columns=df.columns)
 
-        if(not already_written.empty):       
+        if(not len(already_written) != 0):       
 
             to_write = list(df[dfIdColumn].astype(str))
 
