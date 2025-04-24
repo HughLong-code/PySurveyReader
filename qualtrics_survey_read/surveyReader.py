@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from collections import Counter
 from typing_extensions import Self
 
-class surveyReader:
+class SurveyReader:
     """class capable of reading qualtrics survey files from the api, requires api key with :read_responses scope"""
 
     def __init__(self , pathToFile: str = None , dataCenter:str = None , clientId:str = None , clientSecret:str = None , surveyId:str = None , subDirTarget:str = None , altBaseURL:str = None , altAPIURL:str = None , altExportURL:str = None):
