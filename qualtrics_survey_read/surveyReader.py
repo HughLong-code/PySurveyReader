@@ -337,9 +337,9 @@ def to_snowflake(conn:snowflake.connector, df:pd.DataFrame , tableName:str = Non
         try:
             already_written = list(read_sql(cur,f'select \"{snowflakeIdColumn}\" from {tableName}')[snowflakeIdColumn.lower()].astype(str))
         except ValueError:
-            already_written = pd.DataFrame(columns=df.columns)
+            already_written = []
 
-        if(not len(already_written) != 0):       
+        if(not len(already_written) == 0):       
 
             to_write = list(df[dfIdColumn].astype(str))
 
