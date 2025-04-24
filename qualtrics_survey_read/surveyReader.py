@@ -335,13 +335,13 @@ def to_snowflake(conn:snowflake.connector, df:pd.DataFrame , tableName:str = Non
     if(onlyPushNew):
 
         try:
-            already_written = list(read_sql(cur,f'select \"{snowflakeIdColumn}\" from {tableName}')[snowflakeIdColumn.lower()])
+            already_written = list(read_sql(cur,f'select \"{snowflakeIdColumn}\" from {tableName}')[snowflakeIdColumn.lower()].astype(str))
         except ValueError:
             already_written = pd.DataFrame(columns=df.columns)
 
         if(not already_written.empty):       
 
-            to_write = list(df[dfIdColumn])
+            to_write = list(df[dfIdColumn].astype(str))
 
             to_drop = [True if x not in already_written else False for x in to_write]
 
