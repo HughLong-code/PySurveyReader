@@ -105,7 +105,7 @@ class surveyReader:
 
     def read(self , includeLabels:bool = True , secondsToWait:int = 60) -> Self:
 
-        """Reads a file from qualtrics using the parameters specified and holds the compressed bytestring inside the object
+        """Reads a file from qualtrics using the parameters specified and holds the compressed bytestring inside the object returns the object it is called upon for chaining
         
         Keyword Parameters:
         -
