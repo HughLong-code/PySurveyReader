@@ -99,7 +99,7 @@ class SurveyReader:
         if(altExportURL != None and type(altExportURL) == str):
             self.export_url = altExportURL
 
-        if(type(self.survey_id) != str or self.survey_id == None):
+        if(type(self.survey_id) != str):
             raise ValueError('surveyId not speified or invalid type')
 
 
