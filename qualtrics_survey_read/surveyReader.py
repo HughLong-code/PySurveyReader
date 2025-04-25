@@ -352,7 +352,7 @@ def to_snowflake(conn:snowflake.connector, df:pd.DataFrame , tableName:str = Non
 
         now = datetime.now(timezone.utc)
 
-        df['upload_occured_on'] = pd.to_datetime(now)
+        df['upload_occurred_on'] = pd.to_datetime(now)
 
 
         write_pandas(conn=conn , df=df , table_name=tableName , auto_create_table=createTable , overwrite=overwrite , use_logical_type=True)
@@ -362,7 +362,7 @@ def to_snowflake(conn:snowflake.connector, df:pd.DataFrame , tableName:str = Non
     else:
         now = datetime.now(timezone.utc)
 
-        df['upload_occured_on'] = pd.to_datetime(now)
+        df['upload_occurred_on'] = pd.to_datetime(now)
 
         write_pandas(conn=conn , df=df , table_name=tableName , auto_create_table=createTable , overwrite=overwrite , use_logical_type=True)
 
