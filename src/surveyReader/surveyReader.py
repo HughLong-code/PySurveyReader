@@ -154,7 +154,7 @@ class SurveyReader:
 
                 export_session.mount('https://' , poll_retry)
 
-                survey_responses_status = export_session.get(url = self.export_url + f'/{export_start_data['result']['progressId']}' , headers= {'Authorization' : f'Bearer {auth_token}'}   )
+                survey_responses_status = export_session.get(url = self.export_url + f"/{export_start_data['result']['progressId']}" , headers= {'Authorization' : f'Bearer {auth_token}'}   )
 
                 count = 0
 
@@ -164,7 +164,7 @@ class SurveyReader:
 
                     time.sleep(2)
 
-                    survey_responses_status = export_session.get(url= self.export_url + f'/{export_start_data['result']['progressId']}' , headers= {'Authorization' : f'Bearer {auth_token}'}  )
+                    survey_responses_status = export_session.get(url= self.export_url + f"/{export_start_data['result']['progressId']}" , headers= {'Authorization' : f'Bearer {auth_token}'}  )
 
                 
                 if(count >= secondsToWait):
@@ -178,7 +178,7 @@ class SurveyReader:
                 
                 
 
-                survey_file = export_session.get(url=self.export_url + f'/{survey_responses_status.json()['result']['fileId']}/file' , headers= {'Authorization' : f'Bearer {auth_token}'} )
+                survey_file = export_session.get(url=self.export_url + f"/{survey_responses_status.json()['result']['fileId']}/file" , headers= {'Authorization' : f'Bearer {auth_token}'} )
 
                 if(survey_file.status_code != 200):
                     raise ConnectionError(f"survey export failed with status code: {survey_file.status_code}")

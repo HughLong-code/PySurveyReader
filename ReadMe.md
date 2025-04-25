@@ -2,6 +2,11 @@
 
 ---
 
+## Installation:
+  ```shell
+  pip install PySurveyReader
+  ```
+
 ## Classes:
 
 ### `SurveyReader`
