@@ -136,7 +136,7 @@ to_snowflake(conn, df, 'somename')
 ```
 
 
-### Credential Format:**
+### Credential Format:
 
 You may specify the credentials needed as named parameters upon initializing a member of SurveyReader, or you can include a path to a .env or .json file with the credentials in the format:
 
@@ -147,4 +147,45 @@ You may specify the credentials needed as named parameters upon initializing a m
   "datacenter": "urdatacenter",
   "survey_id": "ursurveyId"
 }
+```
+
+### Notes:
+
+As previously stated, you can specify a survey id in a config file OR as a parameter passed at object creation - don't do both. This is done as you may want to fire off multiple survey reads one after another in something like a loop using the same credentials, this will allow you to do that. Don't specify other credentials ( including datacenter id ) in a config file AND as params - it's bad practice, and will throw an error. 
+
+you may be unfarmiliar with the syntax for creating a snowflake connection object to pass to a method like to_snowflake() , this snippet should help you along. Note that you need to specify which schema you want to write to in the connection object you pass for to_snowflake() to work properly. 
+
+This snippet assumes a system level account that doesn't need SAML auth.
+
+```python
+import snowflake.connector
+
+conn = snowflake.connector.connect(
+    user="username", 
+    password = 'password',
+    account="account",
+    warehouse="warehouse_to_use",
+    database="database",
+    role='theroletouse',
+    schema='schematouse' # Change to fit whatever schema you want
+)
+
+#then just pass the conn object to to_snowflake() , the function will write your df to whatever schema was specified in the 'schema' param
+```
+
+This snippet uses SAML auth
+
+```python
+import snowflake.connector
+
+conn = snowflake.connector.connect(
+    user="uremail@somedomain.com", # Email goes here
+    authenticator="externalbrowser", # Uses SSO login
+    account="uraccount",
+    warehouse="urwarehouse",
+    database="urdatabase",
+    schema='urschema' # Change to fit whatever schema you want
+)
+
+#this snippet will pull up a browser window for Oauth - it is more secure than a method using username/password and should be used where practicable.
 ```
