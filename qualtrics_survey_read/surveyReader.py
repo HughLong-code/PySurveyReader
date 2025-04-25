@@ -258,6 +258,9 @@ class SurveyReader:
 
                 for name in self._nameslist:
 
+                    if(self.__sub_directory_targ != None):
+                        name = os.path.join(self.__sub_directory_targ , name)
+                        
                     df = pd.read_csv(name)
 
                     df = self.__df_cleaner( df , dropHeaders)
