@@ -168,7 +168,7 @@ class SurveyReader:
 
                 
                 if(count >= secondsToWait):
-                    raise ConnectionAbortedError(f"file export aborted, polling for status timed out after {count} seconds")
+                    raise ConnectionAbortedError(f"file export aborted, polling for status timed out after {count *2} seconds")
                 
                 if(survey_responses_status.status_code != 200):
                     raise ConnectionError(f"survey response status polling failed with status code: {survey_responses_status.status_code} and messgae: {survey_responses_status.json()}")
@@ -260,7 +260,7 @@ class SurveyReader:
 
                     if(self.__sub_directory_targ != None):
                         name = os.path.join(self.__sub_directory_targ , name)
-                        
+
                     df = pd.read_csv(name)
 
                     df = self.__df_cleaner( df , dropHeaders)
