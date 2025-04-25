@@ -133,15 +133,18 @@ x = a.read().to_df()
 df = x['somename']
 
 to_snowflake(conn, df, 'somename')
+```
 
 
 ### Credential Format:**
 
 You may specify the credentials needed as named parameters upon initializing a member of SurveyReader, or you can include a path to a .env or .json file with the credentials in the format:
 
+```json
 {
   "client_id": "urID",
   "client_secret": "urSecret",
   "datacenter": "urdatacenter",
   "survey_id": "ursurveyId"
 }
+```
