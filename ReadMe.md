@@ -1,4 +1,4 @@
-# SurveyReader class and its associated function provide read from Qualtrics and write to Snowflake functionality
+# SurveyReader class and its associated functions provide read from Qualtrics and write to Snowflake functionality
 
 ---
 
