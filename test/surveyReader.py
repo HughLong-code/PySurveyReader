@@ -228,7 +228,7 @@ class SurveyReader:
         return df
     
     @staticmethod #method will drop headers automatically as part of process
-    def __make_long_format(df:pd.DataFrame , fsuid:bool = True , emplid:bool = True) -> dict:
+    def __make_long_format(df:pd.DataFrame , fsuid:bool = True) -> dict:
 
         response_info = ['StartDate',
                             'EndDate',
@@ -252,8 +252,6 @@ class SurveyReader:
         
         if(fsuid): #not all surveys have fsuid
             response_info.append('FSUID')
-        if(emplid):
-            response_info.append('EMPLID')
 
 
         questions = pd.DataFrame(columns=['question_response' , 'is_label' , 'question_id' , 'response_id'] )
@@ -317,7 +315,7 @@ class SurveyReader:
 
         return { 'question_text' : question_text , 'responses' : questions , 'metadata' : responses } #returns a dictionary with the three dataframes as items. The keys are the names of the dataframes.
 
-    def to_df(self , dropHeaders:bool = True , keepFile:bool = False , makeLong:bool = False , fsuidColumn:bool = False , emplidColumn:bool = False) -> dict:
+    def to_df(self , dropHeaders:bool = True , keepFile:bool = False , makeLong:bool = False , fsuidColumn:bool = False) -> dict:
 
         """turns a compressed bytestring held in a surveyReader object into a pandas dataframe and returns the df(s) as items in a dictionary with the survey name as the key.
         
@@ -364,7 +362,7 @@ class SurveyReader:
                     if( not makeLong):
                         df = self.__df_cleaner( df , dropHeaders)
                     else:
-                        df = self.__make_long_format(df=df , fsuid=fsuidColumn , emplid=emplidColumn)
+                        df = self.__make_long_format(df=df , fsuid=fsuidColumn)
 
                     self._dfs.append(df)
 

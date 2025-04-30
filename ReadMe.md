@@ -80,6 +80,12 @@ Returns the previously read `SurveyReader` object as a dictionary with the name 
   Whether to keep the CSV file created when the bytestring is decompressed.  
   The file will be written to the current working directory if `subDirTarget` was not specified on object creation.
 
+- `makeLong (bool)`  
+  Whether to make the dataframe into a long format dataframe, this will split it into 3 dataframes all joinable together that hold `responses`, `question text` and `metadata`. Will keep question headers from being limited to 250 charachters. The dataframes will be retuned as a nested dict under the original survey name as the key. The keys for the dfs will be `responses` , `metadata` and `question_text`.
+
+- `fsuidColumn (bool)`  
+  If set to True, expects a column called `FSUID` to be in the survey beyond standard qualtrics metadata columns - will throw error if set to true and column `FSUID` is not present.
+
 ---
 
 ## Functions:
