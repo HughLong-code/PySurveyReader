@@ -436,7 +436,7 @@ def to_snowflake(conn:snowflake.connector, df:pd.DataFrame , tableName:str = Non
     if(onlyPushNew):
 
         try:
-            already_written = list(read_sql(cur,f'select \"{snowflakeIdColumn}\" from {tableName}')[snowflakeIdColumn.lower()].astype(str))
+            already_written = set( read_sql(cur,f'select \"{snowflakeIdColumn}\" from {tableName}')[snowflakeIdColumn.lower()].astype(str)) 
         except ValueError:
             already_written = []
 
