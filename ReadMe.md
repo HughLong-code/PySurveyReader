@@ -210,6 +210,7 @@ conn = snowflake.connector.connect(
     authenticator="externalbrowser", # Uses SSO login
     account="uraccount",
     warehouse="urwarehouse",
+    role = "roletouse",
     database="urdatabase",
     schema='urschema' # Change to fit whatever schema you want
 )
