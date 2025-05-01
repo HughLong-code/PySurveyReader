@@ -160,6 +160,22 @@ You may specify the credentials needed as named parameters upon initializing a m
 }
 ```
 
+### long survery option:
+
+When calling `to_df()` on an object you may specify that you want the survey results in long format. This will create 3 tables holing response metadata (time, ip address, fsuid (if it exists)) , responses themselves and the question head text itself respectively. These will be returned as a nested dict under the key of the survey name in the returned object. It will follow the following format in this case.
+
+```python
+{
+  'somesurveyname' :
+  {
+    'responses' : pd.Dataframe(),
+    'metadata' : pd.Dataframe(),
+    'question_text' : pd.dataframe()
+  }
+
+}
+```
+
 ### Notes:
 
 As previously stated, you can specify a survey id in a config file OR as a parameter passed at object creation - don't do both. This is done as you may want to fire off multiple survey reads one after another in something like a loop using the same credentials, this will allow you to do that. Don't specify other credentials ( including datacenter id ) in a config file AND as params - it's bad practice, and will throw an error. 
