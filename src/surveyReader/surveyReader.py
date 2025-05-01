@@ -421,7 +421,7 @@ def to_snowflake(conn:snowflake.connector, df:pd.DataFrame , tableName:str = Non
     assert isinstance(onlyPushNew , bool) , f'onlypushnew is invalid type, {type(onlyPushNew)}, expected bool'
     assert isinstance(tableName , str), f"tableName is of type {type(tableName)} , expected str. tableName is the name of the table you want to write to / create"
     assert isinstance(df , pd.DataFrame) , f"df is of type {type(df)} , expected pandas dataframe"
-    assert isinstance(conn , snowflake.connector) , f"conn is of type {type(conn)} , expected snowflake.connector.connection"
+    assert isinstance(conn , snowflake.connector.connection.SnowflakeConnection) , f"conn is of type {type(conn)} , expected snowflake.connector.connection"
 
     if(onlyPushNew and (type(snowflakeIdColumn) != str or type(dfIdColumn) != str )):
         raise ValueError(f'onlyPushNew or specified but idcolumn params is invalid type of {type(snowflakeIdColumn)} , {type(dfIdColumn)} - expected str')
