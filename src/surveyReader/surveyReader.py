@@ -383,7 +383,7 @@ def read_sql(cur:snowflake.connector.cursor , sql:str ) -> pd.DataFrame:
     
     sql (str) : the string containing the sql you wish to execute"""
 
-    assert isinstance(cur , snowflake.connector.cursor) , f"parameter 'cur' is of type: {type(cur)} , expected snowflake.connector.cursor"
+    assert type(cur) != None , f"parameter 'cur' is of type: {type(cur)} , expected snowflake.connector.cursor"
     assert isinstance(sql , str) , f"parameter 'sql' is of type: {type(sql)} , expected str"
 
     cur.execute(sql)
