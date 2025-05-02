@@ -256,9 +256,9 @@ class SurveyReader:
             response_info.append('EMPLID')
 
 
-        questions = pd.DataFrame(columns=['question_response' , 'is_label' , 'question_id' , 'response_id'] )
+        questions = pd.DataFrame(columns=['question_response' , 'is_label' , 'question_id' , 'response_id' , 'survey_version_unique_qid'] )
         responses = pd.DataFrame(columns=response_info)
-        question_text = pd.DataFrame(columns=['question_text' , 'q_id' , 'is_label'])
+        question_text = pd.DataFrame(columns=['question_text' , 'q_id' , 'is_label' , 'survey_version_unique_qid'])
 
         responses = df[response_info].drop(index = [0,1]).reset_index(drop=True) # holds all external info for a response, id, location, etc...
 
@@ -276,9 +276,10 @@ class SurveyReader:
             json_header = json.loads(str(question_data[1]))
 
             q_id = json_header.get('ImportId')
+            survey_version_unique_id = question_data.name
 
 
-            temp_text = pd.DataFrame(columns=['question_text' , 'q_id' , "is_label"])
+            temp_text = pd.DataFrame(columns=['question_text' , 'q_id' , "is_label" , 'survey_version_unique_qid'])
 
 
             if(json_header.get('isLabelsColumn') == True):
@@ -290,6 +291,7 @@ class SurveyReader:
             temp_text["question_text"] = pd.Series(question_data[0])
             temp_text['q_id'] = pd.Series(q_id)    
             temp_text['is_label'] = pd.Series(is_label)
+            temp_text['survey_version_unique_qid'] = pd.Series(survey_version_unique_id)
 
             question_data = question_data.drop(index=[0,1])
 
@@ -299,6 +301,7 @@ class SurveyReader:
             temp_df['is_label'] = is_label
             temp_df['question_id'] = q_id
             temp_df['response_id'] = response_ids
+            temp_df['survey_version_unique_qid'] = survey_version_unique_id
 
             if(first):
                 first = False
