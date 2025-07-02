@@ -228,7 +228,7 @@ class SurveyReader:
         return df
     
     @staticmethod #method will drop headers automatically as part of process
-    def __make_long_format(df:pd.DataFrame , fsuid:bool = True , emplid:bool = True) -> dict:
+    def __make_long_format(df:pd.DataFrame , fsuid:bool = True , emplid:bool = True , additional_meta_cols:list = None) -> dict:
 
         response_info = ['StartDate',
                             'EndDate',
@@ -254,6 +254,10 @@ class SurveyReader:
             response_info.append('FSUID')
         if(emplid):
             response_info.append('EMPLID')
+
+        if(additional_meta_cols):
+            for col in additional_meta_cols:
+                response_info.append(col)
 
 
         questions = pd.DataFrame(columns=['question_response' , 'is_label' , 'question_id' , 'response_id' , 'survey_version_unique_qid'] )
@@ -320,7 +324,7 @@ class SurveyReader:
 
         return { 'question_text' : question_text , 'responses' : questions , 'metadata' : responses } #returns a dictionary with the three dataframes as items. The keys are the names of the dataframes.
 
-    def to_df(self , dropHeaders:bool = True , keepFile:bool = False , makeLong:bool = False , fsuidColumn:bool = False , emplidColumn:bool = False) -> dict:
+    def to_df(self , dropHeaders:bool = True , keepFile:bool = False , makeLong:bool = False , fsuidColumn:bool = False , emplidColumn:bool = False , additional_meta_cols:list = None) -> dict:
 
         """turns a compressed bytestring held in a surveyReader object into a pandas dataframe and returns the df(s) as items in a dictionary with the survey name as the key.
         
@@ -332,7 +336,9 @@ class SurveyReader:
         
         makeLong (bool) : Whether to make the dataframe into a long format dataframe, this will split it into 3 dataframes all joinable together that hold responses, question text and metadata. Will keep question headers from being limited to 250 charachters. The dataframes will be retuned as a nested dict under the original survey name as the key. The keys for the dfs will be 'responses' , 'questions' and 'question_text'.
         
-        fsuidColumn (bool) : If set to True, expects a column called 'FSUID' to be in the survey beyond standard qualtrics metadata columns - will throw error if set to true and column 'FSUID' is not present."""
+        fsuidColumn (bool) : If set to True, expects a column called 'FSUID' to be in the survey beyond standard qualtrics metadata columns - will throw error if set to true and column 'FSUID' is not present.
+        
+        additional_meta_cols (list : string): provide an array of string corresponding to additional metadata columns present in the dataset, they will be included under the metadata df returned if makelong is true"""
 
         assert isinstance(keepFile , bool), "keepFile is not boolean"
         assert isinstance(dropHeaders, bool) , "dropHeaders is not boolean"
@@ -367,7 +373,7 @@ class SurveyReader:
                     if( not makeLong):
                         df = self.__df_cleaner( df , dropHeaders)
                     else:
-                        df = self.__make_long_format(df=df , fsuid=fsuidColumn , emplid=emplidColumn)
+                        df = self.__make_long_format(df=df , fsuid=fsuidColumn , emplid=emplidColumn , additional_meta_cols=additional_meta_cols)
 
                     self._dfs.append(df)
 
