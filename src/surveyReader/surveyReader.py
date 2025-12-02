@@ -10,7 +10,6 @@ from zipfile import ZipFile
 from io import BytesIO
 from datetime import datetime, timezone
 from collections import Counter
-from typing_extensions import Self
 
 class SurveyReader:
     """class capable of reading qualtrics survey files from the api, requires api key with :read_responses scope"""
@@ -103,7 +102,7 @@ class SurveyReader:
             raise ValueError('surveyId not speified or invalid type')
 
 
-    def read(self , includeLabels:bool = True , secondsToWait:int = 60) -> Self:
+    def read(self , includeLabels:bool = True , secondsToWait:int = 60) :
 
         """Reads a file from qualtrics using the parameters specified and holds the compressed bytestring inside the object returns the object it is called upon for chaining
         
