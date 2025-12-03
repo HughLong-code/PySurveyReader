@@ -88,6 +88,10 @@ Returns the previously read `SurveyReader` object as a dictionary with the name 
 
 ---
 
+### `process_df( df : PandasDataframe , additional_meta_columns : list[str] )`
+  you can call this class method to process an existing survey dataframe into a 
+  long format one.
+
 ## Functions:
 
 ### `read_sql() -> pd.DataFrame`
