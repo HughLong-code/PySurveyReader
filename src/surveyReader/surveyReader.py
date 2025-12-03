@@ -10,11 +10,12 @@ from zipfile import ZipFile
 from io import BytesIO
 from datetime import datetime, timezone
 from collections import Counter
+from typing_extensions import Self
 
 class SurveyReader:
     """class capable of reading qualtrics survey files from the api, requires api key with :read_responses scope"""
 
-    def __init__(self , pathToFile: str = None , dataCenter:str = None , clientId:str = None , clientSecret:str = None , surveyId:str = None , subDirTarget:str = None , altBaseURL:str = None , altAPIURL:str = None , altExportURL:str = None):
+    def __init__(self , pathToFile: str | None = None , dataCenter:str | None = None , clientId:str | None = None , clientSecret:str | None = None , surveyId:str | None = None , subDirTarget:str | None = None , altBaseURL:str | None = None , altAPIURL:str | None = None , altExportURL:str | None = None):
         
         """class that encapsulates reading from a qualtrics survey via the API. See https://api.qualtrics.com/9398592961ced-o-auth-authentication-client-credentials for how to on making credentials and note that only :read_responses scope is required for this object. See https://api.qualtrics.com/1aea264443797-base-url-and-datacenter-i-ds for finding datacenter ids.
         
@@ -24,9 +25,9 @@ class SurveyReader:
         
         dataCenter (str) : you may specify the datacenter id.
         
-        clientId (str) : the client id for qualtrics client.
+        clientId (str) : the client id for qualtrics client. must specify for oath flow
         
-        clientSecret (str) : the cleint secret for qualtrics Oauth.
+        clientSecret (str) : the cleint secret for qualtrics Oauth. always given , if client id also specified uses oath otherwise assumes api token usage
         
         surveyId (str) : the id for your survey. If you do not want to specify this in a config file you can leave it out and specify it on object creation as a passed value. This is not the case with the other config params - secret, id, etc.. the survey ID is found in the url to your survey i.e. in when viewing your survey with url https://foo.yul1.qualtrics.com/survey-builder/SWECCNSJKJK!!@##/edit , the id would be 'SWECCNSJKJK!!@##' (this isnt a real id btw)
         
@@ -52,8 +53,8 @@ class SurveyReader:
         self.export_url = None
 
         assert not (  self.__sub_directory_targ != None and not os.path.isdir(self.__sub_directory_targ)  ), f"sub directory to target: '{self.__sub_directory_targ}' does not exist"
-        assert (pathToFile != None) ^ ( dataCenter != None or clientId != None or clientSecret != None ) , "config file cannot be specified if credentials are passed as parameter. You may omit surveyId form the config and pass as a param though."
-        assert (pathToFile == None) ^ ( dataCenter == None or clientId == None or clientSecret == None ) , "missing required qualtrics auth parameter, all aut params must be specified at creation if pathToFile is blank."
+        assert (pathToFile != None) ^ ( dataCenter != None or (clientId != None and clientSecret != None) ) , "config file cannot be specified if credentials are passed as parameter. You may omit surveyId form the config and pass as a param though."
+        assert (pathToFile == None) ^ ( dataCenter == None or (clientId == None and clientSecret == None) ) , "missing required qualtrics auth parameter, all aut params must be specified at creation if pathToFile is blank."
 
         if(pathToFile != None):
 
@@ -74,10 +75,10 @@ class SurveyReader:
 
             if(dataCenter == None or type(dataCenter) != str):
                 raise ValueError("dataCenter is not defined or invalid type, expected type 'str'")
-            elif(clientId == None or type(dataCenter) != str):
-                raise ValueError("clientId is not defined or invalid type, expected type 'str'")
+            elif((clientId == None and clientSecret == None) or type(dataCenter) != str):
+                raise ValueError("clientId is not defined and neither is client secret, cleintid can be defined for oath flows or invalid type, expected type 'str'")
             elif(clientSecret == None or type(dataCenter) != str):
-                raise ValueError("clientSecret is not defined or invalid type, expected type 'str'")
+                raise ValueError("clientSecret is not defined or invalid type, expected type 'str'. client id must be defined for oath or api token usage")
             elif(surveyId == None or type(dataCenter) != str):
                 raise ValueError("surveyId is not defined or invalid type, expected type 'str'")
             
@@ -102,7 +103,7 @@ class SurveyReader:
             raise ValueError('surveyId not speified or invalid type')
 
 
-    def read(self , includeLabels:bool = True , secondsToWait:int = 60) :
+    def read(self , includeLabels:bool = True , secondsToWait:int = 60) -> Self:
 
         """Reads a file from qualtrics using the parameters specified and holds the compressed bytestring inside the object returns the object it is called upon for chaining
         
@@ -124,17 +125,19 @@ class SurveyReader:
 
             session.mount('https://' , retrys)
 
-            auth_response = session.post(self.base_auth_url , auth=(self.__client_id , self.__client_secret) , data= {'grant_type': 'client_credentials','scope': 'read:survey_responses'})
+            if( self.__client_id != None) :
 
-            if(auth_response.status_code != 200):
-                raise ConnectionError(f"unable to aquire qualtrics auth token, server responsing with status code {auth_response.status_code} and message: {auth_response.json()}") 
-            
-            auth_token = auth_response.json()['access_token']
+                auth_response = session.post(self.base_auth_url , auth=(self.__client_id , self.__client_secret) , data= {'grant_type': 'client_credentials','scope': 'read:survey_responses'})
+
+                if(auth_response.status_code != 200):
+                    raise ConnectionError(f"unable to aquire qualtrics auth token, server responsing with status code {auth_response.status_code} and message: {auth_response.json()}") 
+                
+                auth_token = auth_response.json()['access_token']
 
             start_export_header = {
                 "Content-Type": "application/json",
                 "Accept": "application/json",
-                "Authorization": f"Bearer {auth_token}"
+                "Authorization" if self.__client_id != None else "X-API-TOKEN": f"Bearer {auth_token}" if self.__client_id != None else self.__client_secret
             }
 
             export_options = {"format" : "csv" , 'compress' : True , "includeLabelColumns" : includeLabels}
@@ -153,7 +156,7 @@ class SurveyReader:
 
                 export_session.mount('https://' , poll_retry)
 
-                survey_responses_status = export_session.get(url = self.export_url + f"/{export_start_data['result']['progressId']}" , headers= {'Authorization' : f'Bearer {auth_token}'}   )
+                survey_responses_status = export_session.get(url = self.export_url + f"/{export_start_data['result']['progressId']}" , headers= {'Authorization' : f'Bearer {auth_token}'} if self.__client_id != None else {"X-API-TOKEN" : self.__client_secret} )
 
                 count = 0
 
@@ -163,7 +166,7 @@ class SurveyReader:
 
                     time.sleep(2)
 
-                    survey_responses_status = export_session.get(url= self.export_url + f"/{export_start_data['result']['progressId']}" , headers= {'Authorization' : f'Bearer {auth_token}'}  )
+                    survey_responses_status = export_session.get(url= self.export_url + f"/{export_start_data['result']['progressId']}" , headers= {'Authorization' : f'Bearer {auth_token}'} if self.__client_id != None else {"X-API-TOKEN" : self.__client_secret}  )
 
                 
                 if(count >= secondsToWait):
@@ -177,7 +180,7 @@ class SurveyReader:
                 
                 
 
-                survey_file = export_session.get(url=self.export_url + f"/{survey_responses_status.json()['result']['fileId']}/file" , headers= {'Authorization' : f'Bearer {auth_token}'} )
+                survey_file = export_session.get(url=self.export_url + f"/{survey_responses_status.json()['result']['fileId']}/file" , headers= {'Authorization' : f'Bearer {auth_token}'} if self.__client_id != None else {"X-API-TOKEN" : self.__client_secret} )
 
                 if(survey_file.status_code != 200):
                     raise ConnectionError(f"survey export failed with status code: {survey_file.status_code}")
@@ -189,7 +192,7 @@ class SurveyReader:
                 return self
 
     @staticmethod
-    def __df_cleaner( df:pd.DataFrame = None,  dropHeaders:bool = True) -> pd.DataFrame:
+    def __df_cleaner( df:pd.DataFrame | None = None,  dropHeaders:bool = True) -> pd.DataFrame:
     
         df.columns = [(lambda x : x[:250] if len(x) > 255 else x)(x) for x in list(df.iloc[0].values)]
 
@@ -227,7 +230,7 @@ class SurveyReader:
         return df
     
     @staticmethod #method will drop headers automatically as part of process
-    def __make_long_format(df:pd.DataFrame , fsuid:bool = True , emplid:bool = True , additional_meta_cols:list = None) -> dict:
+    def __make_long_format(df:pd.DataFrame , fsuid:bool = True , emplid:bool = True , additional_meta_cols:list | None = None) -> dict:
 
         response_info = ['StartDate',
                             'EndDate',
@@ -323,7 +326,7 @@ class SurveyReader:
 
         return { 'question_text' : question_text , 'responses' : questions , 'metadata' : responses } #returns a dictionary with the three dataframes as items. The keys are the names of the dataframes.
 
-    def to_df(self , dropHeaders:bool = True , keepFile:bool = False , makeLong:bool = False , fsuidColumn:bool = False , emplidColumn:bool = False , additional_meta_cols:list = None) -> dict:
+    def to_df(self , dropHeaders:bool = True , keepFile:bool = False , makeLong:bool = False , fsuidColumn:bool = False , emplidColumn:bool = False , additional_meta_cols: list[str] | None = None) -> dict:
 
         """turns a compressed bytestring held in a surveyReader object into a pandas dataframe and returns the df(s) as items in a dictionary with the survey name as the key.
         
@@ -380,6 +383,17 @@ class SurveyReader:
         zipped = zip( self._nameslist , self._dfs )
 
         return dict(zipped)
+
+    def process_df( self , df : pd.DataFrame , additional_meta_cols : list[str] | None = None ) :
+        """takes a df and makes it long format. Returns dataframes as a dict in this order { 'question_text' : question_text , 'responses' : responses , 'metadata' : metadata }
+        
+        Keyword Parameters:
+        -
+        df (pd.DataFrame) : dataframe to make long
+        """
+
+        return self.__make_long_format( df=df , additional_meta_cols=additional_meta_cols , fsuid=False , emplid=False )
+        
 
  
 def read_sql(cur:snowflake.connector.cursor , sql:str ) -> pd.DataFrame:
