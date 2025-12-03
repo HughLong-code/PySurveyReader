@@ -151,6 +151,10 @@ to_snowflake(conn, df, 'somename')
 
 You may specify the credentials needed as named parameters upon initializing a member of SurveyReader, or you can include a path to a .env or .json file with the credentials in the format:
 
+#### Oath vs. API Token
+
+If you want to use an Oath flow, just specify your client id in the credentials, otherwise just specifiy your client secret for api token access.
+
 ```json
 {
   "client_id": "urID",
