@@ -232,7 +232,7 @@ class SurveyReader:
     @staticmethod #method will drop headers automatically as part of process
     def __make_long_format(df:pd.DataFrame ) -> dict:
 
-        response_info = list( filter( lambda x: x is not None ,  [ col if 'QID' in col else None for col in df.loc[1].index ] ) )
+        response_info = list( filter( lambda x: x is not None ,  [ col if 'QID' not in json.loads( df.loc[ 1 , col ]).get('ImportId') else None for col in df.loc[1].index ] ) )
 
         questions = pd.DataFrame(columns=['question_response' , 'is_label' , 'question_id' , 'response_id' , 'survey_version_unique_qid'] )
         responses = pd.DataFrame(columns=response_info)
