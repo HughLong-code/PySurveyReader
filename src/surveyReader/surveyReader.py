@@ -475,7 +475,7 @@ def to_snowflake(conn:snowflake.connector.SnowflakeConnection, df:pd.DataFrame ,
 
         now = datetime.now(timezone.utc)
 
-        df['upload_occurred_on'] = pd.to_datetime(now)
+        df['UPLOAD_OCCURRED_ON'] = pd.to_datetime(now)
 
         write_pandas(conn=conn , df=df , table_name=tableName , auto_create_table=createTable , overwrite=overwrite , use_logical_type=True)
 
