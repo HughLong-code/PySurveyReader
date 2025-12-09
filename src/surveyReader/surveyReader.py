@@ -396,7 +396,7 @@ class SurveyReader:
         
 
  
-def read_sql(cur:snowflake.connector.cursor , sql:str ) -> pd.DataFrame:
+def read_sql(cur:snowflake.connector.cursor.SnowflakeCursor , sql:str ) -> pd.DataFrame:
     """Executes any arbitrary sql using the snowflake cursor object passes and the sql passed as a string. returns a pandas dataframe.
     
     Keyword Parameters:
@@ -418,7 +418,7 @@ def read_sql(cur:snowflake.connector.cursor , sql:str ) -> pd.DataFrame:
 
     return df
 
-def to_snowflake(conn:snowflake.connector, df:pd.DataFrame , tableName:str = None,  overwrite:bool = False , createTable:bool = False , onlyPushNew:bool = False , snowflakeIdColumn:str = None , dfIdColumn:str = None) -> int:
+def to_snowflake(conn:snowflake.connector.SnowflakeConnection, df:pd.DataFrame , tableName:str = None,  overwrite:bool = False , createTable:bool = False , onlyPushNew:bool = False , snowflakeIdColumn:str = None , dfIdColumn:str = None) -> int:
 
     """writes a pd.dataframe to the snowflake schema specied in the passed connection, with the tablename given. set overwrite and autocreate to true to truncate an existing table and recreate. Set overwrite to true and autocreate to false to truncate and repopulate. If onlyPushNew is set to True, you MUST specify the id columns to decide what is new from the snowflake table AND from the passed dataframe - these will be compared to see what rows have/havent been pushed to snowflake yet.
     
