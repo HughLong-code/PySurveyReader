@@ -459,7 +459,7 @@ def to_snowflake(conn:snowflake.connector.SnowflakeConnection, df:pd.DataFrame ,
 
         try:
             already_written = set( read_sql(cur,f'select \"{snowflakeIdColumn}\" from {tableName}')[snowflakeIdColumn.lower()].astype(str)) 
-        except ValueError:
+        except (ValueError , snowflake.connector.ProgrammingError):
             already_written = []
 
         if(not len(already_written) == 0):       
